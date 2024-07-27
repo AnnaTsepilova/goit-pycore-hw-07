@@ -18,12 +18,6 @@ error_message = {
     "CONTACT_UPDATED": "Contact updated."
     }
 
-def validate_phone(phone: str):
-    '''
-    Simple phone number validation
-    '''
-    return re.match(r"^\+?(\d+)$", phone.strip())
-
 def input_error(func: Callable):
     '''
     Generic input decorator for validation user input
@@ -36,9 +30,11 @@ def input_error(func: Callable):
         additional_message = ""
         match func.__name__:
             case 'show_phone':
-                additional_message = "Usage: phone PHONE"
-            case 'add_contact' | 'change_contact':
+                additional_message = "Usage: phone NAME"
+            case 'add_contact':
                 additional_message = f"Usage: {action[0]} NAME PHONE"
+            case 'change_contact':
+                additional_message = f"Usage: {action[0]} NAME OLD_PHONE NEW_PHONE"
             case 'add_birthday':
                 additional_message = f"Usage: add-birthday NAME {Birthday.format()}"
             case 'show_birthday':
@@ -46,8 +42,8 @@ def input_error(func: Callable):
 
         try:
             return func(*args, **kwargs)
-        except ValueError:
-            return error_message["INVALID_ARGUMENTS"] + ' ' + additional_message
+        except ValueError as e:
+            return error_message["INVALID_ARGUMENTS"] + f"\n  {e}\n  {additional_message}"
         except KeyError:
             return error_message["CONTACT_NOT_FOUND"]
         except IndexError:
@@ -88,21 +84,17 @@ def add_contact(args, book: AddressBook):
             message = error_message["PHONE_EXIST"]
     return message
 
-@custom_error
 @input_error
-def change_contact(args, contacts):
+def change_contact(args, book: AddressBook):
     '''
     Function change existing contacts
     '''
-    name, phone = args
-
-    if validate_phone(phone) is None:
-        raise Exception(error_message["INVALID_PHONENUMBER"])
-
-    if contacts.get(name) is None:
+    name, old_phone, new_phone, *_ = args
+    record = book.find(name)
+    if record is None:
         raise KeyError
 
-    contacts[name] = phone
+    record.edit_phone(old_phone, new_phone)
     return error_message["CONTACT_UPDATED"]
 
 @input_error

@@ -2,8 +2,6 @@ from address_book import AddressBook
 
 import handler
 
-from test import test
-
 def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
@@ -12,11 +10,14 @@ def parse_input(user_input):
 def main():
     book = AddressBook()
 
-    test(book)
-
     print("Welcome to the assistant bot!")
     while True:
-        user_input = input("Enter a command: ")
+        try:
+            user_input = input("Enter a command: ")
+        except KeyboardInterrupt:
+            print("Good bye!")
+            break
+
         if not user_input:
             continue
         command, *args = parse_input(user_input)

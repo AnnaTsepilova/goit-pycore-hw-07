@@ -27,7 +27,7 @@ class Record:
             if str(phone) == str(old_number):
                 self.phones[i] = Phone(new_number)
                 return True
-        return False
+        raise ValueError(f"Phone number {old_number} not found.")
 
     def find_phone(self, number):
         '''Search phone in record'''
