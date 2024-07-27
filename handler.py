@@ -3,6 +3,7 @@ from typing import Callable
 from functools import wraps
 from address_book import AddressBook
 from record import Record
+from birthday import Birthday
 
 ## Dictionary of error messages
 error_message = {
@@ -33,11 +34,15 @@ def input_error(func: Callable):
 
         ## Additional message hint to error message
         additional_message = ""
-        match action[0]:
-            case 'show':
+        match func.__name__:
+            case 'show_phone':
                 additional_message = "Usage: phone PHONE"
-            case 'add' | 'change':
+            case 'add_contact' | 'change_contact':
                 additional_message = f"Usage: {action[0]} NAME PHONE"
+            case 'add_birthday':
+                additional_message = f"Usage: add-birthday NAME {Birthday.format()}"
+            case 'show_birthday':
+                additional_message = "Usage: show-birthday NAME"
 
         try:
             return func(*args, **kwargs)
@@ -98,14 +103,15 @@ def change_contact(args, contacts):
         raise KeyError
 
     contacts[name] = phone
-    return "Contact changed."
+    return error_message["CONTACT_UPDATED"]
 
-@custom_error
+@input_error
 def add_birthday(args, book: AddressBook):
     '''
     Function adds birthday to existing contact
     '''
-    name, birthday, *_ = args
+    name, birthday = args
+
     record = book.find(name)
     message = error_message["CONTACT_UPDATED"]
 
@@ -116,15 +122,15 @@ def add_birthday(args, book: AddressBook):
 
     return message
 
-@custom_error
+@input_error
 def show_birthday(args, book: AddressBook):
     '''
-    Function adds birthday to existing contact
+    Function show birthday in existing contact
     '''
     name, *_ = args
     record = book.find(name)
     if record is None:
-        return error_message["CONTACT_NOT_FOUND"]
+        raise KeyError
 
     return f"{record.birthday}"
 
@@ -138,11 +144,13 @@ def list_contacts(book: AddressBook):
     return output
 
 @input_error
-def show_phone(args, contacts):
+def show_phone(args, book: AddressBook):
     '''
     Function show phone of added contact
     '''
-    name = args[0]
-    phone = contacts[name]
+    name, *_ = args
+    record = book.find(name)
+    if record is None:
+        raise KeyError
 
-    return phone
+    return f"phones: {'; '.join(p.value for p in record.phones)}"

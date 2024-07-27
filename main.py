@@ -39,7 +39,6 @@ def main():
                 print(handler.add_birthday(args, book))
             case "show-birthday":
                 print(handler.show_birthday(args, book))
-
             case "birthdays":
                 upcoming_birthdays = book.get_upcoming_birthdays()
                 print("Список привітань на цьому тижні:", upcoming_birthdays)
