@@ -10,6 +10,8 @@ def main():
     john_record.add_phone("1234567890")
     john_record.add_phone("5555555555")
 
+    john_record.add_birthday("27.07.2003")
+
     # Додавання запису John до адресної книги
     book.add_record(john_record)
 
@@ -36,6 +38,8 @@ def main():
     # Видалення запису Jane
     book.delete("Jane")
 
+    upcoming_birthdays = book.get_upcoming_birthdays()
+    print("Список привітань на цьому тижні:", upcoming_birthdays)
 
 
 if __name__ == "__main__":

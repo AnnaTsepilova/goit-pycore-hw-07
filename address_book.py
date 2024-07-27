@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from collections import UserDict
 from record import Record
 
@@ -27,3 +29,32 @@ class AddressBook(UserDict):
 
         del self.data[name]
         return True
+
+    def get_upcoming_birthdays(self) -> list:
+        """
+        Function return upcomming birthdays.
+        """
+        birthdays = []
+
+        today = datetime.today().date()
+
+        for record in self.data:
+            birthday = self.data[record].birthday.value.date()
+
+            specific_date = datetime(year=today.year, month=birthday.month, day=birthday.day).date()
+
+            ## Birthday next 7 days
+            if (specific_date - today).days <= 7 and (specific_date - today).days >= 0:
+                weekend_correction = 0
+                if specific_date.isoweekday() > 5:
+                    weekend_correction = 7 - specific_date.isoweekday() + 1
+
+                congratulation_date = specific_date + timedelta(days=weekend_correction)
+                birthdays.append(
+                    {
+                        'name': record,
+                        'congratulation_date': congratulation_date.strftime("%Y.%m.%d")
+                    }
+                )
+
+        return birthdays
