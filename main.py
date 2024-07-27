@@ -1,46 +1,52 @@
 from address_book import AddressBook
-from record import Record
+
+import handler
+
+from test import test
+
+def parse_input(user_input):
+    cmd, *args = user_input.split()
+    cmd = cmd.strip().lower()
+    return cmd, *args
 
 def main():
-# Створення нової адресної книги
     book = AddressBook()
 
-    # Створення запису для John
-    john_record = Record("John")
-    john_record.add_phone("1234567890")
-    john_record.add_phone("5555555555")
+    test(book)
 
-    john_record.add_birthday("27.07.2003")
+    print("Welcome to the assistant bot!")
+    while True:
+        user_input = input("Enter a command: ")
+        if not user_input:
+            continue
+        command, *args = parse_input(user_input)
 
-    # Додавання запису John до адресної книги
-    book.add_record(john_record)
+        match command:
+            case "close" | "exit":
+                print("Good bye!")
+                break
+            case "hello":
+                print("How can I help you?")
+            case "add":
+                print(handler.add_contact(args, book))
+            case "change":
+                print(handler.change_contact(args, book))
+            case "phone":
+                print(handler.show_phone(args, book))
+            case "all":
+                print(handler.list_contacts(book))
+            case "add-birthday":
+                pass
 
-    # Створення та додавання нового запису для Jane
-    jane_record = Record("Jane")
-    jane_record.add_phone("9876543210")
-    book.add_record(jane_record)
+            case "show-birthday":
+                pass
 
-    # Виведення всіх записів у книзі
-    for name, record in book.data.items():
-        print(record)
+            case "birthdays":
+                upcoming_birthdays = book.get_upcoming_birthdays()
+                print("Список привітань на цьому тижні:", upcoming_birthdays)
 
-    # Знаходження та редагування телефону для John
-    john = book.find("John")
-    john.edit_phone("1234567890", "1112223333")
-
-
-    print(john)
-
-    # Пошук конкретного телефону у записі John
-    found_phone = john.find_phone("5555555555")
-    print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
-
-    # Видалення запису Jane
-    book.delete("Jane")
-
-    upcoming_birthdays = book.get_upcoming_birthdays()
-    print("Список привітань на цьому тижні:", upcoming_birthdays)
-
+            case _:
+                print(handler.error_message["UNKNOWN_COMMAND"])
 
 if __name__ == "__main__":
     main()

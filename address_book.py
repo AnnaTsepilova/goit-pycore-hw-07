@@ -18,7 +18,7 @@ class AddressBook(UserDict):
         result = self.data.get(name)
         if result:
             return result
-        print("Record not found")
+
         return None
 
     def delete(self, name: str) -> bool:
