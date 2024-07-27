@@ -36,10 +36,9 @@ def main():
             case "all":
                 print(handler.list_contacts(book))
             case "add-birthday":
-                pass
-
+                print(handler.add_birthday(args, book))
             case "show-birthday":
-                pass
+                print(handler.show_birthday(args, book))
 
             case "birthdays":
                 upcoming_birthdays = book.get_upcoming_birthdays()
