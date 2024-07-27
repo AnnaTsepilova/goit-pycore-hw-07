@@ -1,4 +1,3 @@
-import re
 from typing import Callable
 from functools import wraps
 from address_book import AddressBook
@@ -27,27 +26,27 @@ def input_error(func: Callable):
         action = func.__name__.split('_')
 
         ## Additional message hint to error message
-        additional_message = ""
+        usage_message = ""
         match func.__name__:
             case 'show_phone':
-                additional_message = "Usage: phone NAME"
+                usage_message = "Usage: phone NAME"
             case 'add_contact':
-                additional_message = f"Usage: {action[0]} NAME PHONE"
+                usage_message = f"Usage: {action[0]} NAME PHONE"
             case 'change_contact':
-                additional_message = f"Usage: {action[0]} NAME OLD_PHONE NEW_PHONE"
+                usage_message = f"Usage: {action[0]} NAME OLD_PHONE NEW_PHONE"
             case 'add_birthday':
-                additional_message = f"Usage: add-birthday NAME {Birthday.format()}"
+                usage_message = f"Usage: add-birthday NAME {Birthday.format()}"
             case 'show_birthday':
-                additional_message = "Usage: show-birthday NAME"
+                usage_message = "Usage: show-birthday NAME"
 
         try:
             return func(*args, **kwargs)
         except ValueError as e:
-            return error_message["INVALID_ARGUMENTS"] + f"\n  {e}\n  {additional_message}"
+            return error_message["INVALID_ARGUMENTS"] + f"\n  {e}\n  {usage_message}"
         except KeyError:
             return error_message["CONTACT_NOT_FOUND"]
         except IndexError:
-            return error_message["INVALID_COMMAND"] + ' ' + additional_message
+            return error_message["INVALID_COMMAND"] + ' ' + usage_message
 
     return inner
 
