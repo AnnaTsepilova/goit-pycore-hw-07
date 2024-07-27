@@ -38,8 +38,11 @@ class AddressBook(UserDict):
 
         today = datetime.today().date()
 
-        for record in self.data:
-            birthday = self.data[record].birthday.value.date()
+        for record in self.data.values():
+            if not record.birthday:
+                continue
+
+            birthday = record.birthday.value.date()
 
             specific_date = datetime(year=today.year, month=birthday.month, day=birthday.day).date()
 
@@ -52,7 +55,7 @@ class AddressBook(UserDict):
                 congratulation_date = specific_date + timedelta(days=weekend_correction)
                 birthdays.append(
                     {
-                        'name': record,
+                        'name': record.name.value,
                         'congratulation_date': congratulation_date.strftime("%Y.%m.%d")
                     }
                 )
